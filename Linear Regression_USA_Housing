@@ -21,10 +21,14 @@ USAhousing.describe()
 
 USAhousing.columns
 
+
+#Distribution of the data
 sns.pairplot(USAhousing)
 
+#Normaldistribution of the data
 sns.distplot(USAhousing['Price'])
 
+#Correlation Heatmap
 sns.heatmap(USAhousing.corr())
 
 
@@ -51,8 +55,11 @@ coeff_df
 ############Predictions#############
 predictions = lm.predict(X_test)
 
+
+#Checking the difference
 plt.scatter(y_test,predictions)
 
+#Checking the Residuals
 sns.distplot((y_test-predictions),bins=50);
 
 
