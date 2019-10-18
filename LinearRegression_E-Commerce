@@ -27,10 +27,11 @@ customers.describe()
 
 customers.info()
 
+
 sns.set_palette("GnBu_d")
 sns.set_style('whitegrid')
-
 sns.jointplot(x='Time on Website',y='Yearly Amount Spent',data=customers)
+
 
 sns.jointplot(x='Time on App',y='Yearly Amount Spent',data=customers)
 
@@ -60,6 +61,7 @@ print('Coefficients: \n', lm.coef_)
 ############Predictions#############
 predictions = lm.predict(X_test)
 
+#Modelfit/Residual Distribution
 plt.scatter(y_test,predictions)
 plt.xlabel('Y Test')
 plt.ylabel('Predicted Y')
@@ -73,5 +75,5 @@ print('MSE:', metrics.mean_squared_error(y_test, predictions))
 print('RMSE:', np.sqrt(metrics.mean_squared_error(y_test, predictions)))
 
 
-#Residuals
+#Normaldistribution of Residuals
 sns.distplot((y_test-predictions),bins=50);
