@@ -1,6 +1,8 @@
 ################################# Decision Trees & Random Forests using scikit-learn##########################################
-##################################################Kyphosis Dataset############################################################
+##################################################Loan Dataset############################################################
 
+Will a debtor pay his debts back?
+Target: 'not.fully.paid'
 
 ##########Standard Imports##############
 import pandas as pd
@@ -11,36 +13,72 @@ import seaborn as sns
 
 
 ########Exploratory Data Analysis########
-df = pd.read_csv('kyphosis.csv')
-df.head()
+loans = pd.read_csv('loan_data.csv')
+loans.info()
+loans.describe()
+loans.head()
 
-sns.pairplot(df,hue='Kyphosis',palette='Set1')
+
+plt.figure(figsize=(10,6))
+loans[loans['credit.policy']==1]['fico'].hist(alpha=0.5,color='blue',
+                                              bins=30,label='Credit.Policy=1')
+loans[loans['credit.policy']==0]['fico'].hist(alpha=0.5,color='red',
+                                              bins=30,label='Credit.Policy=0')
+plt.legend()
+plt.xlabel('FICO')
 
 
-#########Training the model##########
+
+plt.figure(figsize=(10,6))
+loans[loans['not.fully.paid']==1]['fico'].hist(alpha=0.5,color='blue',
+                                              bins=30,label='not.fully.paid=1')
+loans[loans['not.fully.paid']==0]['fico'].hist(alpha=0.5,color='red',
+                                              bins=30,label='not.fully.paid=0')
+plt.legend()
+plt.xlabel('FICO')
+
+
+
+plt.figure(figsize=(11,7))
+sns.countplot(x='purpose',hue='not.fully.paid',data=loans,palette='Set1')
+
+
+
+sns.jointplot(x='fico',y='int.rate',data=loans,color='purple')
+
+
+
+plt.figure(figsize=(11,7))
+sns.lmplot(y='int.rate',x='fico',data=loans,hue='credit.policy',
+           col='not.fully.paid',palette='Set1')
+           
+           
+#############Preparing Data##############
+loans.info()
+
+
+#Getting Dummy Variables
+cat_feats = ['purpose']
+final_data = pd.get_dummies(loans,columns=cat_feats,drop_first=True)
+
+
+#############Splitting the data#########
 from sklearn.model_selection import train_test_split
+X = final_data.drop('not.fully.paid',axis=1)
+y = final_data['not.fully.paid']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=101)
 
 
-X = df.drop('Kyphosis',axis=1)
-y = df['Kyphosis']
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
-
-##########Decision Trees############
+#############Training the model##########
 from sklearn.tree import DecisionTreeClassifier
 dtree = DecisionTreeClassifier()
 dtree.fit(X_train,y_train)
 
 
-############Predictions#############
+#############Predictions & Evaluation################
 predictions = dtree.predict(X_test)
-
-
-############Performance Evaluation###########
 from sklearn.metrics import classification_report,confusion_matrix
-
 print(classification_report(y_test,predictions))
-
 print(confusion_matrix(y_test,predictions))
 
 
@@ -50,7 +88,7 @@ from sklearn.externals.six import StringIO
 from sklearn.tree import export_graphviz
 import pydot 
 
-features = list(df.columns[1:])
+features = list(final_data.columns[1:])
 features
 
 
@@ -63,8 +101,9 @@ Image(graph[0].create_png())
 
 #############Random Forests############
 from sklearn.ensemble import RandomForestClassifier
-rfc = RandomForestClassifier(n_estimators=100)
-rfc.fit(X_train, y_train)
+rfc = RandomForestClassifier(n_estimators=600)
+rfc.fit(X_train,y_train)
+
 
 rfc_pred = rfc.predict(X_test)
 
