@@ -25,7 +25,7 @@ USAhousing.columns
 #Distribution of the data
 sns.pairplot(USAhousing)
 
-#Normaldistribution of the data
+#Normaldistribution of the target
 sns.distplot(USAhousing['Price'])
 
 #Correlation Heatmap
