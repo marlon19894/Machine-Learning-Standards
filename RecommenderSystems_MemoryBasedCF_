@@ -53,7 +53,7 @@ item_similarity = pairwise_distances(train_data_matrix.T, metric='cosine')
 def predict(ratings, similarity, type='user'):
     if type == 'user':
         mean_user_rating = ratings.mean(axis=1)
-        #Wir nutzen np.newaxis damit mean_user_rating das selbe Format wie Ratings hat
+        
         ratings_diff = (ratings - mean_user_rating[:, np.newaxis]) 
         pred = mean_user_rating[:, np.newaxis] + similarity.dot(ratings_diff) / np.array([np.abs(similarity).sum(axis=1)]).T
     elif type == 'item':
